@@ -1,3 +1,17 @@
+/// Implement the behavior that giving the focus to one of the form inputs clear the error
+const amount = document.getElementById('amount');
+const interest = document.getElementById('interest');
+const years = document.getElementById('years');
+const clearError = () => document.querySelector('.alert').remove();
+
+amount.addEventListener('focus', () => clearError())
+interest.addEventListener('focus', () => clearError())
+years.addEventListener('focus', () => clearError())
+
+const errorAlreadyDisplayed = () => {
+    return !!document.querySelector('.alert');
+}
+
 const showError = error => {
     /// create a div
     const errorDiv = document.createElement('div');
@@ -7,17 +21,10 @@ const showError = error => {
     const heading = document.querySelector('.heading');
     /// insert error above heading
     card.insertBefore(errorDiv, heading);
-    /// Clear error after 3 seconds
-    setTimeout(() => {
-       document.querySelector('.alert').remove();
-    }, 3000)
 }
 
 document.getElementById('loan-form').addEventListener('submit', e => {
     e.preventDefault();
-    const amount = document.getElementById('amount');
-    const interest = document.getElementById('interest');
-    const years = document.getElementById('years');
     const monthlyPayment = document.getElementById('monthly-payment');
     const totalPayment = document.getElementById('total-payment');
     const totalInterest = document.getElementById('total-interest');
@@ -34,6 +41,7 @@ document.getElementById('loan-form').addEventListener('submit', e => {
         totalPayment.value = (monthly * calculatedPayment).toFixed(2);
         totalInterest.value = ((monthly * calculatedPayment) - principal).toFixed(2);
     } else {
-        showError('Please check your numbers');
+        if(!errorAlreadyDisplayed())
+            showError('Please check your numbers');
     }
 })
