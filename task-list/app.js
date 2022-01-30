@@ -29,16 +29,27 @@ const createTask = (taskContent) => {
     return li;
 }
 
+const loadTasksFromStorage = () => {
+    let tasks;
+    if(!localStorage.getItem('tasks')) {
+        tasks = [];
+    } else {
+        tasks = JSON.parse(localStorage.getItem('tasks'));
+    }
+    return tasks;
+}
+
 function addTask(e) {
     e.preventDefault();
-    if(taskInput.value === '') {
-        return;
+    const tasks = loadTasksFromStorage();
+    const canSave = taskInput.value.trim() && (-1 === tasks.indexOf(taskInput.value.trim()));
+    if(canSave){
+        const task = createTask(taskInput.value.trim());
+        /// append the li to the ul
+        taskList.appendChild(task);
+        /// persist task in local storage
+        persistTask(taskInput.value);
     }
-    const task = createTask(taskInput.value);
-    /// append the li to the ul
-    taskList.appendChild(task);
-    /// persist task in local storage
-    persistTask(taskInput.value);
     taskInput.value = '';
 }
 
@@ -74,15 +85,6 @@ function filterTask(e) {
     })
 }
 
-const loadTasksFromStorage = () => {
-    let tasks;
-    if(!localStorage.getItem('tasks')) {
-        tasks = [];
-    } else {
-        tasks = JSON.parse(localStorage.getItem('tasks'));
-    }
-    return tasks;
-}
 
 function persistTask(task) {
     const tasks = loadTasksFromStorage();
@@ -102,12 +104,8 @@ function loadTasks() {
 }
 
 function removeTaskFromStorage(task) {
-    const tasks = loadTasksFromStorage();
-    tasks.forEach((taskItem, index) => {
-        if(taskItem === task.textContent) {
-            tasks.splice(index, 1);
-        }
-    });
+    let tasks = loadTasksFromStorage();
+    tasks = tasks.filter(taskContent => (taskContent !== task.textContent));
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
