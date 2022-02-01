@@ -53,12 +53,14 @@ class UI {
 class Store {
 
     static getAllBooks = () => {
-        let books = localStorage.getItem('books') || [];
-        return (books.length && JSON.parse(books)) || books;
+        return (localStorage.getItem('books') && JSON.parse(localStorage.getItem('books'))) || []
     }
+
+    static serializeBooks = books => JSON.stringify(books);
 
     static displayBooks = () => {
         const books = Store.getAllBooks();
+        console.log(books);
         const ui = new UI();
         books.forEach(book => {
             ui.addBookToList(book);
@@ -66,10 +68,11 @@ class Store {
     }
 
     static addBook = (book) => {
-        const books = Store.getAllBooks() || [];
-        ///books.push(JSON.stringify(book));
+        const books = Store.getAllBooks();
+        console.log(books)
         books.push(book);
-        localStorage.setItem('books', JSON.stringify(books));
+        console.log(books)
+        localStorage.setItem('books', Store.serializeBooks(books));
     }
 
     static getBook = () => {
@@ -85,7 +88,7 @@ class Store {
         });
         console.log(books);
         localStorage.removeItem('books');
-        localStorage.setItem('books', JSON.stringify(books));
+        localStorage.setItem('books', Store.serializeBooks(books));
     }
 }
 document.addEventListener('DOMContentLoaded', Store.displayBooks);
