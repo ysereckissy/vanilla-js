@@ -38,6 +38,57 @@ class UserProfileComponent {
     }
 }
 
+class UserRepositories {
+    constructor(props) {
+        this.container = document.getElementById('repositories');
+    }
+
+    _render = repository => {
+        const html = `
+            <div class="card card-body mb-2">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="${repository.html_url}" target="_blank">${repository.name}</a>
+                    </div>
+                    <div class="col-md-6">
+                       <span class="badge bg-primary">Stars: ${repository.stargazers_count}</span>
+                       <span class="badge bg-secondary">Watchers: ${repository.watchers_count}</span>
+                       <span class="badge bg-success">Forks: ${repository.forks_count}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        return html;
+    }
+    render = repositories => {
+        let html = '';
+        repositories.forEach(repository => {
+            html += this._render(repository);
+        });
+        this.container.innerHTML = html;
+    }
+
+    renderComponentHeader = () => {
+        const header = document.querySelector('.repos-list-header');
+        if(!header) {
+            const container = document.querySelector('.search-container');
+            const h3 = document.createElement('h3');
+            h3.className = 'repos-list-header';
+            h3.appendChild(document.createTextNode('Latest Repositories'));
+            container.insertBefore(h3, this.container);
+        }
+    }
+
+    clear = () => {
+        const header = document.querySelector('.repos-list-header');
+        if(header) {
+            header.remove();
+        }
+        this.container.innerHTML = ``;
+    }
+
+}
+
 class Utils {
     static showAlert = (message, className) => {
         Utils.clearAlert();
