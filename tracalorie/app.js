@@ -1,20 +1,20 @@
 /// Storage Controller
 const StorageController = (function(){
+    const _getItems = () => {
+        const items = (localStorage.getItem('items') && JSON.parse(localStorage.getItem('items'))) || [];
+        return items;
+    };
+    const _setItems = (items) => {
+        localStorage.setItem('items', JSON.stringify(items));
+    };
     return {
-        _getItems: () => {
-            const items = (localStorage.getItem('items') && JSON.parse(localStorage.getItem('items'))) || [];
-            return items;
-        },
-        _setItems:  (items) => {
-            localStorage.setItem('items', JSON.stringify(items));
-        },
         persistItem: item => {
-            const items = StorageController._getItems();
+            const items = _getItems();
             items.push(item);
-            StorageController._setItems(items);
+            _setItems(items);
         },
-        fetchItems: () => StorageController._getItems(),
-        persistItems: items => StorageController._setItems(items),
+        fetchItems: () => _getItems(),
+        persistItems: items => _setItems(items),
     }
 })();
 /// Item Controller
