@@ -1,7 +1,24 @@
 /// Storage Controller
-
+const StorageController = (function(){
+    return {
+        _getItems: () => {
+            const items = (localStorage.getItem('items') && JSON.parse(localStorage.getItem('items'))) || [];
+            return items;
+        },
+        _setItems:  (items) => {
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        persistItem: item => {
+            const items = StorageController._getItems();
+            items.push(item);
+            StorageController._setItems(items);
+        },
+        fetchItems: () => StorageController._getItems(),
+        persistItems: items => StorageController._setItems(items),
+    }
+})();
 /// Item Controller
-const ItemController = (() => {
+const ItemController = ((storageCtrl) => {
     const Item = function (id, name, calories) {
         this.id = id;
         this.name = name;
@@ -14,6 +31,9 @@ const ItemController = (() => {
     }
 
     return {
+        initialize: () => {
+            data.items = storageCtrl.fetchItems();
+        },
         getItems: () => data.items,
         addItem: (name, calories) => {
             let ID;
@@ -40,7 +60,6 @@ const ItemController = (() => {
         getCurrentItem: () => data.currentItem,
         updateItemList: (name, calories) => {
             calories = parseInt(calories);
-            console.log(data.items);
             data.items = data.items.map(item => {
                 if(item.id === data.currentItem.id) {
                     return Object.assign(item, {name, calories});
@@ -48,14 +67,19 @@ const ItemController = (() => {
                     return item;
                 }
             });
+            storageCtrl.persistItems(data.items);
         },
         deleteCurrentItem: () => {
             data.items = data.items.filter(item => item.id !== data.currentItem.id);
+            storageCtrl.persistItems(data.items);
         },
-        deleteAll: () => data.items = [],
+        deleteAll: () => {
+            data.items = []
+            storageCtrl.persistItems(data.items);
+        },
         logData: () => data
     }
-})();
+})(StorageController);
 /// UI Controller
 const UIController = (() => {
     const UISelectors = {
@@ -144,7 +168,7 @@ const UIController = (() => {
     }
 })();
 /// App Controller
-const AppController = ((itemCtrl, uiCtrl) => {
+const AppController = ((itemCtrl, storageCtr, uiCtrl) => {
     const loadEventListeners = function () {
         const selectors = uiCtrl.getSelectors();
         document.querySelector(selectors.addBtn).addEventListener('click', (e) => {
@@ -154,6 +178,7 @@ const AppController = ((itemCtrl, uiCtrl) => {
                 uiCtrl.addListItem(newItem);
                 const totalCalories = itemCtrl.getTotalCalories();
                 uiCtrl.updateTotalCalories(totalCalories);
+                storageCtr.persistItem(newItem);
                 uiCtrl.clearInput();
             }
             e.preventDefault();
@@ -204,15 +229,16 @@ const AppController = ((itemCtrl, uiCtrl) => {
     return {
         init: () => {
             uiCtrl.clearEditState();
+            itemCtrl.initialize();
+            uiCtrl.rehydrateItemList();
             const items = itemCtrl.getItems();
             if(!items.length) {
                 uiCtrl.hideList();
             }
-            uiCtrl.populateItemList(items);
             loadEventListeners();
         }
     }
-})(ItemController, UIController);
+})(ItemController, StorageController, UIController);
 
 /// Initialize the application
 AppController.init();
