@@ -49,6 +49,10 @@ const ItemController = (() => {
                 }
             });
         },
+        deleteCurrentItem: () => {
+            data.items = data.items.filter(item => item.id !== data.currentItem.id);
+        },
+        deleteAll: () => data.items = [],
         logData: () => data
     }
 })();
@@ -60,6 +64,7 @@ const UIController = (() => {
         updateBtn: '.update-btn',
         deleteBtn: '.delete-btn',
         backBtn: '.back-btn',
+        clearBtn: '.clear-btn',
         itemNameInput: '#item-name',
         itemCalories: '#item-calories',
         totalCalories: '.total-calories',
@@ -178,12 +183,21 @@ const AppController = ((itemCtrl, uiCtrl) => {
         })
         /// Delete Event listener
         document.querySelector(selectors.deleteBtn).addEventListener('click', e => {
-
+            ItemController.deleteCurrentItem();
+            uiCtrl.rehydrateItemList();
             e.preventDefault();
         })
         /// Back Event Listener
         document.querySelector(selectors.backBtn).addEventListener('click', e => {
+            uiCtrl.clearInput();
+            uiCtrl.clearEditState();
+            e.preventDefault();
+        });
 
+        /// Clear All Event Listener
+        document.querySelector(selectors.clearBtn).addEventListener('click', e => {
+            itemCtrl.deleteAll();
+            uiCtrl.rehydrateItemList();
             e.preventDefault();
         })
     }
