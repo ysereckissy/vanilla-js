@@ -4,8 +4,8 @@
   "description": "The microposts project demonstrate how to use webpack to build a js application",
   "main": "app.js",
   "scripts": {
-    "start": "webpack-dev-server --output-public-path=/build/ --mode development --progress --open --hot",
-    "build": "webpack --mode production --progress"
+    "dev": "webpack-dev-server --progress",
+    "build": "webpack --mode production"
   },
   "keywords": [
     "microposts"

@@ -1,13 +1,12 @@
 const path = require('path');
 
 module.exports = {
-    entry: {
-        app: ['@babel/polyfill', './sources/app.js']
-    },
+    entry: './src/app.js',
     output: {
-        path: path.resolve(__dirname, 'build'),
+        path: path.resolve(__dirname, 'dist'),
         filename: 'app.bundle.js'
     },
+    mode: "none",
     module: {
         rules: [{
             test: /\.(js)$/,
@@ -19,5 +18,12 @@ module.exports = {
                 }
             }
         }]
+    },
+    devServer: {
+        port: 9000,
+        static: {
+            directory: path.resolve(__dirname, 'dist'),
+        },
+        hot: true
     }
 }
