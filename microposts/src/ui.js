@@ -1,3 +1,4 @@
+
 class UI {
     constructor() {
         this.posts = document.querySelector('#posts');
@@ -12,6 +13,56 @@ class UI {
     postBody = () => this.bodyInput.value;
     clearTitle = () => this.titleInput.value = '';
     clearBody = () => this.bodyInput.value = '';
+    clearId = () => this.idInput.value = '';
+    clearForm = () => {
+        this.clearId();
+        this.clearTitle();
+        this.clearBody();
+    }
+
+    showEditControls = () => {
+        this.postSubmit.textContent = 'Update Post';
+        this.postSubmit.className = 'post-submit btn btn-warning btn-block';
+    }
+
+    insertCancelButton = () => {
+        const button = document.createElement('button');
+        button.className = 'post-cancel btn btn-light btn-block';
+        button.appendChild(document.createTextNode('Cancel Edit'));
+
+        const cardForm = document.querySelector('.card-form');
+        const formEnd = document.querySelector('.form-end');
+        cardForm.insertBefore(button, formEnd);
+    }
+
+    showAddPostControls = () => {
+        this.postSubmit.textContent = 'Post It';
+        this.postSubmit.className = 'post-submit btn btn-primary btn-block';
+    }
+
+    fillForm = post => {
+        this.titleInput.value = post.title;
+        this.bodyInput.value = post.body;
+        this.idInput.value = post.id;
+    }
+    getState = () => this.forState;
+    getPostedId = () => this.idInput.value;
+
+    setState = state => {
+        this.forState = state;
+        const savedClassName = this.postSubmit.className;
+        const savedContent = this.postSubmit.textContent;
+        if('edit' === state) {
+            this.showEditControls();
+            this.insertCancelButton();
+        } else {
+            if(document.querySelector('.post-cancel')) {
+                document.querySelector('.post-cancel').remove();
+            }
+            this.showAddPostControls();
+            this.clearForm();
+        }
+    }
 
     showPosts = posts => {
         let output = '';
